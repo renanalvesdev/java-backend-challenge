@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -62,6 +63,7 @@ public class UserController {
 		}
 	}
 	
+	@Secured("ROLE_ADMIN")
 	@PatchMapping("/update-permissions/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void updatePermission(@PathVariable Integer id,

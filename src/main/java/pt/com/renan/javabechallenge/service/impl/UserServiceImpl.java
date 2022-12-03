@@ -46,16 +46,15 @@ public class UserServiceImpl implements UserDetailsService {
 	}
 	
 	@Override
+	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = repository.findByLogin(username).orElseThrow(() -> new UsernameNotFoundException("User not found in database"));
-		
-		
 		
 		return org.springframework.security.core.userdetails.User
 				.builder()
 				.username(user.getLogin())
 				.password(user.getPassword())
-				.roles(Stream.of(Roles.values()).map(Roles::name).toArray(String[]::new))
+				.roles(user.getPrivilegesToArray())
 				.build();
 	} 
 	

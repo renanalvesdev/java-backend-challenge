@@ -1,6 +1,5 @@
 package pt.com.renan.javabechallenge.domain.entity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CollectionTable;
@@ -9,7 +8,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -48,5 +46,14 @@ public class User {
 	@CollectionTable(name = "tb_privileges", joinColumns = @JoinColumn(name = "id"))
 	@Enumerated(EnumType.STRING)
 	private List<Roles> privileges ; 
+	
+	public String[] getPrivilegesToArray() {
+		
+		return getPrivileges()
+				.stream()
+				.map(p -> p.toString())
+				.toArray(String[]::new);
+
+	}
 	
 }

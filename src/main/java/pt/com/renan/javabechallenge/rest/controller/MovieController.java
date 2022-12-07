@@ -42,4 +42,9 @@ public class MovieController {
 		service.addToFavorites(id, userId);
 	}
 	
+	@PostMapping("/removeFromFavorites/{id}/{userId}")
+	public void removeFromFavorites(@PathVariable String id, @PathVariable Integer userId){
+		service.removeFromFavorites(id, userId);
+	}
+	
 }

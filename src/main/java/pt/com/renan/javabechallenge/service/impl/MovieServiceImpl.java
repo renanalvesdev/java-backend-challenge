@@ -59,6 +59,23 @@ public class MovieServiceImpl {
 		repository.save(movie);
 		userRepository.save(user);
 	}
+	
+	@Transactional
+	public void removeFromFavorites(String id, Integer userId) {
+		
+		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Invalid User"));
+		Movie movie = repository.findById(id).orElseThrow(() -> new RuntimeException("Invalid Movie"));
+		
+		if(user.getFavoriteMovies().stream().noneMatch(m -> m.equals(movie))) {
+			throw new RuntimeException("Selected movie is not favorited.");
+		}
+		
+		movie.decreaseStars();
+		user.getFavoriteMovies().remove(movie);
+		
+		repository.save(movie);
+		userRepository.save(user);
+	}
 
 	private IMDBMoviesData IMDBAllMovies() {
 		Mono<IMDBMoviesData> movies =  getWebClient().get()

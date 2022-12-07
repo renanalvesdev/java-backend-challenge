@@ -47,4 +47,13 @@ public class MovieController {
 		service.removeFromFavorites(id, userId);
 	}
 	
+	@GetMapping("/topMovies")
+	public List<Movie> topMovies() {
+		return service.topMovies();
+	}
+	
+	@GetMapping("/favoriteMovies/{userId}")
+	public List<Movie> favoriteMovies(@PathVariable Integer userId) {
+		return service.favoriteMovies(userId);
+	}
 }

@@ -23,6 +23,9 @@ import reactor.core.publisher.Mono;
 public class MovieServiceImpl {
 
 	@Autowired
+	private IMDBApiService imdbApiService;
+	
+	@Autowired
 	private MovieRepository repository;
 	
 	@Autowired
@@ -30,7 +33,7 @@ public class MovieServiceImpl {
 	
 	public void populate() {
 		
-		List<IMDBMovieData> IMDBMovies = IMDBAllMovies().getItems();
+		List<IMDBMovieData> IMDBMovies = imdbApiService.IMDBAllMovies();
 		
 		IMDBMovies
 			.stream()
@@ -46,8 +49,8 @@ public class MovieServiceImpl {
 	@Transactional
 	public void addToFavorites(String id, Integer userId) {
 		
-		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Invalid User"));
-		Movie movie = repository.findById(id).orElseThrow(() -> new RuntimeException("Invalid Movie"));
+		User user = findUser(userId);
+		Movie movie = findMovie(id);
 		
 		if(user.getFavoriteMovies().stream().anyMatch(m -> m.equals(movie))) {
 			throw new RuntimeException("Movie already favorited");
@@ -63,8 +66,8 @@ public class MovieServiceImpl {
 	@Transactional
 	public void removeFromFavorites(String id, Integer userId) {
 		
-		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Invalid User"));
-		Movie movie = repository.findById(id).orElseThrow(() -> new RuntimeException("Invalid Movie"));
+		User user = findUser(userId);
+		Movie movie = findMovie(id);
 		
 		if(user.getFavoriteMovies().stream().noneMatch(m -> m.equals(movie))) {
 			throw new RuntimeException("Selected movie is not favorited.");
@@ -76,22 +79,21 @@ public class MovieServiceImpl {
 		repository.save(movie);
 		userRepository.save(user);
 	}
-
-	private IMDBMoviesData IMDBAllMovies() {
-		Mono<IMDBMoviesData> movies =  getWebClient().get()
-				.uri("/Top250Movies/k_f5xbs09y")
-				.retrieve()
-				.bodyToMono(IMDBMoviesData.class);
-		
-		IMDBMoviesData moviesObject = movies.block(); 
-		
-		return moviesObject;
+	
+	public List<Movie> topMovies() {
+		return repository.findTop10ByOrderByStarsDesc();
 	}
 	
-	private WebClient getWebClient() {		
-		return WebClient.builder()
-				.baseUrl("https://imdb-api.com/en/API")
-				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-				.build();
+	public List<Movie> favoriteMovies(Integer userId) {
+		User user = findUser(userId);
+		return user.getFavoriteMovies();
+	}
+	
+	private Movie findMovie(String id) {
+		return repository.findById(id).orElseThrow(() -> new RuntimeException("Invalid Movie"));
+	}
+	
+	private User findUser(Integer userId) {
+		return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Invalid User"));
 	}
 }

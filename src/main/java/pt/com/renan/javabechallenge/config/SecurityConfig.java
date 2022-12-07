@@ -52,6 +52,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 			.authorizeRequests()
 				.antMatchers("/api/users/update-permissions/**")
 					.hasRole("ADMIN")
+				.antMatchers("/api/movie/populate/**")
+					.hasRole("ADMIN")
 				.antMatchers(HttpMethod.POST, "/api/users/**")
 					.permitAll()				
 				.antMatchers("/h2-console/**")

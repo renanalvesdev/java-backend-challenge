@@ -6,10 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import lombok.RequiredArgsConstructor;
+import pt.com.renan.javabechallenge.domain.entity.Movie;
+import pt.com.renan.javabechallenge.domain.entity.User;
 import pt.com.renan.javabechallenge.domain.repository.MovieRepository;
+import pt.com.renan.javabechallenge.domain.repository.UserRepository;
 import pt.com.renan.javabechallenge.integration.IMDBMovieData;
 import pt.com.renan.javabechallenge.integration.IMDBMoviesData;
 import reactor.core.publisher.Mono;
@@ -21,6 +25,9 @@ public class MovieServiceImpl {
 	@Autowired
 	private MovieRepository repository;
 	
+	@Autowired
+	private UserRepository userRepository;
+	
 	public void populate() {
 		
 		List<IMDBMovieData> IMDBMovies = IMDBAllMovies().getItems();
@@ -30,6 +37,27 @@ public class MovieServiceImpl {
 			.filter(movie -> !repository.existsById(movie.getId()))
 			.forEach(movie -> repository.save(movie.toMovie()));
 		
+	}
+	
+	public List<Movie> getAll(){
+		return repository.findAll();
+	}
+	
+	@Transactional
+	public void addToFavorites(String id, Integer userId) {
+		
+		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Invalid User"));
+		Movie movie = repository.findById(id).orElseThrow(() -> new RuntimeException("Invalid Movie"));
+		
+		if(user.getFavoriteMovies().stream().anyMatch(m -> m.equals(movie))) {
+			throw new RuntimeException("Movie already favorited");
+		}
+		
+		movie.increaseStars();
+		user.getFavoriteMovies().add(movie);
+		
+		repository.save(movie);
+		userRepository.save(user);
 	}
 
 	private IMDBMoviesData IMDBAllMovies() {

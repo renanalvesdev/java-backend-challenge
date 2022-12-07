@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Data
 @Builder
 @Entity
@@ -30,6 +29,23 @@ public class Movie {
 	@Column
 	private String Crew;
 	
+	@Column
+	private Integer stars;
 	
+	public Movie() {
+		this.stars = 0;
+	}
+	
+	public void decreaseStars() {
+		stars--;
+	}
+	
+	public void increaseStars() {
+		stars++;
+	}
+	
+	public boolean equals(Movie movie) {
+		return movie.getId() == Id;
+	}
 	
 }

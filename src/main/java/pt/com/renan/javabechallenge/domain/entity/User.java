@@ -1,5 +1,6 @@
 package pt.com.renan.javabechallenge.domain.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CollectionTable;
@@ -12,6 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
@@ -55,5 +58,14 @@ public class User {
 				.toArray(String[]::new);
 
 	}
+	
+	@ManyToMany
+	@JoinTable(
+		name = "tb_favorite_movies", 
+		joinColumns = @JoinColumn(name = "user_id"), 
+		inverseJoinColumns = @JoinColumn(name = "movie_id")
+	)
+	private List<Movie> favoriteMovies;
+
 	
 }

@@ -14,9 +14,12 @@ import reactor.core.publisher.Mono;
 @Service
 public class IMDBApiService {
 
+	private static final String API_KEY = "k_f5xbs09y";
+	private static final String BASE_URL = "https://imdb-api.com/en/API";
+	
 	public List<IMDBMovieData> IMDBAllMovies() {
 		Mono<IMDBMoviesData> movies =  getWebClient().get()
-				.uri("/Top250Movies/k_f5xbs09y")
+				.uri("/Top250Movies/"+API_KEY)
 				.retrieve()
 				.bodyToMono(IMDBMoviesData.class);
 		
@@ -27,7 +30,7 @@ public class IMDBApiService {
 	
 	private WebClient getWebClient() {		
 		return WebClient.builder()
-				.baseUrl("https://imdb-api.com/en/API")
+				.baseUrl(BASE_URL)
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 				.build();
 	}

@@ -12,7 +12,7 @@ import pt.com.renan.javabechallenge.domain.entity.Movie;
 import pt.com.renan.javabechallenge.domain.entity.User;
 import pt.com.renan.javabechallenge.domain.repository.MovieRepository;
 import pt.com.renan.javabechallenge.domain.repository.UserRepository;
-import pt.com.renan.javabechallenge.integration.IMDBMovieData;
+import pt.com.renan.javabechallenge.security.authentication.AuthenticationFacade;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +26,9 @@ public class MovieServiceImpl {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private AuthenticationFacade authenticationFacade;
 	
 	public void populate() {
 		
@@ -41,9 +44,9 @@ public class MovieServiceImpl {
 	}
 	
 	@Transactional
-	public void addToFavorites(String id, Integer userId) {
+	public void addToFavorites(String id) {
 		
-		User user = findUser(userId);
+		User user = findUser();
 		Movie movie = findMovie(id);
 		
 		if(user.getFavoriteMovies().stream().anyMatch(m -> m.equals(movie))) {
@@ -58,9 +61,9 @@ public class MovieServiceImpl {
 	}
 	
 
-	public void operationFavorites(String id, Integer userId, BiConsumer<User, Movie> operation) {
+	public void operationFavorites(String id, BiConsumer<User, Movie> operation) {
 		
-		User user = findUser(userId);
+		User user = findUser();
 		Movie movie = findMovie(id);
 		operation.accept(user, movie);
 		
@@ -69,8 +72,8 @@ public class MovieServiceImpl {
 	}
 
 	@Transactional
-	public void removeFromFavorites(String id, Integer userId) {		
-		operationFavorites(id, userId, (u,m) -> remove(u,m));
+	public void removeFromFavorites(String id) {		
+		operationFavorites(id, (u,m) -> remove(u,m));
 	}
 
 	private void remove(User user, Movie movie) {
@@ -86,16 +89,22 @@ public class MovieServiceImpl {
 		return repository.findTop10ByOrderByStarsDesc();
 	}
 	
-	public List<Movie> favoriteMovies(Integer userId) {
-		User user = findUser(userId);
+	public List<Movie> favoriteMovies() {
+		User user = findUser();
 		return user.getFavoriteMovies();
 	}
 	
 	public Movie findMovie(String id) {
-		return repository.findById(id).orElseThrow(() -> new RuntimeException("Invalid Movie"));
+		return repository
+				.findById(id)
+				.orElseThrow(() -> new RuntimeException("Invalid Movie"));
 	}
 	
-	private User findUser(Integer userId) {
-		return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Invalid User"));
+	private User findUser() {
+		return userRepository
+				.findByLogin(authenticationFacade.getLoggerUser())
+				.orElseThrow(() -> new RuntimeException("Invalid User"));
 	}
+	
+
 }

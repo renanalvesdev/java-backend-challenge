@@ -74,9 +74,9 @@ public class MovieServiceImplTest {
 	
 	@Test
 	void shouldAddMovieToFavorites() {
-		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(user));
+		Mockito.when(userRepository.findByLogin(Mockito.anyString())).thenReturn(Optional.of(user));
 		Mockito.when(repository.findById(Mockito.anyString())).thenReturn(Optional.of(movie3));
-		service.addToFavorites("t0003", 1);
+		service.addToFavorites("t0003");
 		final ArgumentCaptor<Movie> captor = ArgumentCaptor.forClass(Movie.class);
 		Mockito.verify(repository).save(captor.capture());
 		Movie movie = captor.getValue();

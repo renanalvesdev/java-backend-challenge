@@ -37,14 +37,14 @@ public class MovieController {
 		return service.getAll();
 	}
 	
-	@PostMapping("/addToFavorites/{id}/{userId}")
-	public void addToFavorites(@PathVariable String id, @PathVariable Integer userId){
-		service.addToFavorites(id, userId);
+	@PostMapping("/addToFavorites/{id}")
+	public void addToFavorites(@PathVariable String id){
+		service.addToFavorites(id);
 	}
 	
-	@PostMapping("/removeFromFavorites/{id}/{userId}")
-	public void removeFromFavorites(@PathVariable String id, @PathVariable Integer userId){
-		service.removeFromFavorites(id, userId);
+	@PostMapping("/removeFromFavorites/{id}")
+	public void removeFromFavorites(@PathVariable String id){
+		service.removeFromFavorites(id);
 	}
 	
 	@GetMapping("/topMovies")
@@ -52,8 +52,8 @@ public class MovieController {
 		return service.topMovies();
 	}
 	
-	@GetMapping("/favoriteMovies/{userId}")
-	public List<Movie> favoriteMovies(@PathVariable Integer userId) {
-		return service.favoriteMovies(userId);
+	@GetMapping("/favoriteMovies")
+	public List<Movie> favoriteMovies() {
+		return service.favoriteMovies();
 	}
 }

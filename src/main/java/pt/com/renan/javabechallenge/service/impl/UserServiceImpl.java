@@ -1,8 +1,7 @@
 package pt.com.renan.javabechallenge.service.impl;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -61,14 +60,17 @@ public class UserServiceImpl implements UserDetailsService {
 
 	@Transactional
 	public void updatePermissions(Integer id, List<Roles> permissions) {
-		 repository
-				 .findById(id)
-				 .map(user  -> {
-					 user.setPrivileges(permissions);
-					 return repository.save(user);
-				 })
-				 .orElseThrow(() -> new RoleNotFoundException());
 		
+		Optional<User> opUser  = repository.findById(id);
+		
+		if(!opUser.isPresent()) {
+			throw new RoleNotFoundException();
+		}
+		
+		User user = opUser.get();
+		user.setPrivileges(permissions);
+		repository.save(user);
+				
 	}
 
 }

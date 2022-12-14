@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,7 @@ import pt.com.renan.javabechallenge.domain.repository.UserRepository;
 import pt.com.renan.javabechallenge.security.authentication.AuthenticationFacade;
 
 @Service
+@CacheConfig(cacheNames = "movies")
 @RequiredArgsConstructor
 public class MovieServiceImpl {
 
@@ -85,6 +88,7 @@ public class MovieServiceImpl {
 		user.getFavoriteMovies().remove(movie);
 	}
 	
+	@Cacheable
 	public List<Movie> topMovies() {
 		return repository.findTop10ByOrderByStarsDesc();
 	}

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import pt.com.renan.javabechallenge.domain.entity.Movie;
 
-public interface MovieRepository extends JpaRepository<Movie, String>{
+public interface MovieRepository extends JpaRepository<Movie, Integer>{
   
 	List<Movie> findTop10ByOrderByStarsDesc();
 

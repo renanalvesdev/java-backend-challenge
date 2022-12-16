@@ -38,12 +38,12 @@ public class MovieController {
 	}
 	
 	@PostMapping("/addToFavorites/{id}")
-	public void addToFavorites(@PathVariable String id){
+	public void addToFavorites(@PathVariable Integer id){
 		service.addToFavorites(id);
 	}
 	
 	@PostMapping("/removeFromFavorites/{id}")
-	public void removeFromFavorites(@PathVariable String id){
+	public void removeFromFavorites(@PathVariable Integer id){
 		service.removeFromFavorites(id);
 	}
 	

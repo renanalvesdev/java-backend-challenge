@@ -2,6 +2,7 @@ package pt.com.renan.javabechallenge.service.impl;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,7 +17,7 @@ import pt.com.renan.javabechallenge.domain.entity.User;
 import pt.com.renan.javabechallenge.domain.repository.MovieRepository;
 import pt.com.renan.javabechallenge.domain.repository.UserRepository;
 import pt.com.renan.javabechallenge.integration.ExternalApiMovieService;
-import pt.com.renan.javabechallenge.integration.themoviedb.TheMovieDbApiService;
+import pt.com.renan.javabechallenge.integration.MovieDTO;
 import pt.com.renan.javabechallenge.security.authentication.AuthenticationFacade;
 
 @Service
@@ -25,7 +26,7 @@ import pt.com.renan.javabechallenge.security.authentication.AuthenticationFacade
 public class MovieServiceImpl {
 
 	@Autowired
-	@Qualifier("theMovieDbApiService")
+	@Qualifier("iMDBApiService")
 	private ExternalApiMovieService exApiMovieService;
 	
 	@Autowired
@@ -39,10 +40,18 @@ public class MovieServiceImpl {
 	
 	public void populate() {
 		
-		exApiMovieService.allMovies()
-			.stream()
-			.filter(movie -> !repository.existsById(movie.getId()))
-			.forEach(movie -> repository.save(movie));
+		List<MovieDTO> newMovies = exApiMovieService.allMovies();
+
+		List<MovieDTO> savedMovies = repository
+				.findAll()
+				.stream()
+				.map(movie -> movie.toMovieDto())
+				.collect(Collectors.toList());
+		
+		newMovies.removeAll(savedMovies);
+		
+		newMovies.stream().forEach(movie -> repository.save(movie.toMovie()));
+		
 		
 	}
 	
@@ -50,25 +59,7 @@ public class MovieServiceImpl {
 		return repository.findAll();
 	}
 	
-	@Transactional
-	public void addToFavorites(String id) {
-		
-		User user = findUser();
-		Movie movie = findMovie(id);
-		
-		if(user.getFavoriteMovies().stream().anyMatch(m -> m.equals(movie))) {
-			throw new RuntimeException("Movie already favorited");
-		}
-		
-		movie.increaseStars();
-		user.getFavoriteMovies().add(movie);
-		
-		repository.save(movie);
-		userRepository.save(user);
-	}
-	
-
-	public void operationFavorites(String id, BiConsumer<User, Movie> operation) {
+	public void operationFavorites(Integer id, BiConsumer<User, Movie> operation) {
 		
 		User user = findUser();
 		Movie movie = findMovie(id);
@@ -77,19 +68,36 @@ public class MovieServiceImpl {
 		repository.save(movie);
 		userRepository.save(user);
 	}
-
+	
+	//ADD to favorites
 	@Transactional
-	public void removeFromFavorites(String id) {		
+	public void addToFavorites(Integer id) {		
+		operationFavorites(id, (u,m) -> add(u,m));
+	}
+	
+	@Transactional
+	public void add(User user, Movie movie) {
+		
+		if(user.getFavoriteMovies().stream().anyMatch(m -> m.equals(movie))) {
+			throw new RuntimeException("Movie already favorited");
+		}
+		
+		movie.addToFavorites(user);
+	}
+	
+
+	//remove from favorites
+	@Transactional
+	public void removeFromFavorites(Integer id) {		
 		operationFavorites(id, (u,m) -> remove(u,m));
 	}
-
+	
 	private void remove(User user, Movie movie) {
 		if(user.getFavoriteMovies().stream().noneMatch(m -> m.equals(movie))) {
 			throw new RuntimeException("Selected movie is not favorited.");
 		}
 		
-		movie.decreaseStars();
-		user.getFavoriteMovies().remove(movie);
+		movie.removeFromFavorites(user);
 	}
 	
 	@Cacheable
@@ -102,7 +110,7 @@ public class MovieServiceImpl {
 		return user.getFavoriteMovies();
 	}
 	
-	public Movie findMovie(String id) {
+	public Movie findMovie(Integer id) {
 		return repository
 				.findById(id)
 				.orElseThrow(() -> new RuntimeException("Invalid Movie"));

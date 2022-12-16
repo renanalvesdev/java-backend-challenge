@@ -52,15 +52,15 @@ public class MovieServiceImplTest {
 	
 	@Test
 	void shouldReturnAnMovieInstanceWhenMovieIsFound() {
-		Mockito.when(repository.findById(Mockito.eq("t0001"))).thenReturn(Optional.of(movie1));
-		Movie response = service.findMovie("t0001");
+		Mockito.when(repository.findById(Mockito.eq(1))).thenReturn(Optional.of(movie1));
+		Movie response = service.findMovie(1);
 		assertEquals(Movie.class, response.getClass());
 	}
 	
 	@Test
 	void shouldReturnAnExceptionWhenMovieIsNotFound() {
-		Mockito.when(repository.findById(Mockito.anyString())).thenReturn(Optional.empty());
-		RuntimeException exception = assertThrows(RuntimeException.class, () -> service.findMovie("t001"));
+		Mockito.when(repository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+		RuntimeException exception = assertThrows(RuntimeException.class, () -> service.findMovie(1));
 		assertEquals("Invalid Movie", exception.getMessage());
 	}
 	
@@ -75,8 +75,8 @@ public class MovieServiceImplTest {
 	@Test
 	void shouldAddMovieToFavorites() {
 		Mockito.when(userRepository.findByLogin(Mockito.anyString())).thenReturn(Optional.of(user));
-		Mockito.when(repository.findById(Mockito.anyString())).thenReturn(Optional.of(movie3));
-		service.addToFavorites("t0003");
+		Mockito.when(repository.findById(Mockito.anyInt())).thenReturn(Optional.of(movie3));
+		service.addToFavorites(3);
 		final ArgumentCaptor<Movie> captor = ArgumentCaptor.forClass(Movie.class);
 		Mockito.verify(repository).save(captor.capture());
 		Movie movie = captor.getValue();
@@ -84,10 +84,10 @@ public class MovieServiceImplTest {
 	}
 	
 	private void mockMovie() {
-		movie1 = new Movie("t0001", "Rumo ao hexa", "2022", "Neymar, Vini Malvadeza", 10);
-		movie2 = new Movie("t0002", "A volta dos que nao foram", "2022", "Neymar, Vini Malvadeza", 2);
-		movie3 = new Movie("t0003", "El chanfro ", "2022", "Neymar, Vini Malvadeza", 10);
-		movie4 = new Movie("t0004", "Deu a louca na chapeuzinho", "2022", "Neymar, Vini Malvadeza", 10);
+		movie1 = new Movie(1, "Rumo ao hexa", 10);
+		movie2 = new Movie(2, "A volta dos que nao foram", 2);
+		movie3 = new Movie(3, "El chanfro ", 10);
+		movie4 = new Movie(4, "Deu a louca na chapeuzinho", 10);
 
 		movies = new ArrayList<Movie>();
 		movies.add(movie1);

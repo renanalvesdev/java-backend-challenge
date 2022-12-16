@@ -14,7 +14,7 @@ public abstract class ExternalApiMovieService {
 	
 	private String apiKey;
 	
-	public List<Movie> allMovies() {
+	public List<MovieDTO> allMovies() {
 		return retreiveData().getMovieResults();
 	}
 

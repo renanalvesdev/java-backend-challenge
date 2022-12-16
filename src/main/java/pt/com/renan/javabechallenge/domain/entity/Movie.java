@@ -2,13 +2,16 @@ package pt.com.renan.javabechallenge.domain.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import pt.com.renan.javabechallenge.integration.MovieDTO;
 
 @AllArgsConstructor
 @Data
@@ -18,18 +21,14 @@ import lombok.NoArgsConstructor;
 public class Movie {
 	
 	@Id
-	private String Id;
+	@GeneratedValue (strategy = GenerationType.AUTO)
+	private Integer Id;
 	
 	@Column
-	private String Title;
+	private String title;
 	
 	@Column
-	private String Year;
-	
-	@Column
-	private String Crew;
-	
-	@Column
+	@EqualsAndHashCode.Exclude
 	private Integer stars;
 	
 	public Movie() {
@@ -44,8 +43,21 @@ public class Movie {
 		stars++;
 	}
 	
-	public boolean equals(Movie movie) {
-		return movie.getId() == Id;
+	public void addToFavorites(User user) {
+		this.increaseStars();
+		user.addMovieToFavorites(this);
+	}
+	
+	public void removeFromFavorites(User user) {
+		this.decreaseStars();
+		user.removeMovieToFavorites(this);
+	}
+	
+	public MovieDTO toMovieDto() {
+		return  MovieDTO
+    			.builder()
+    			.title(title)
+    			.build();
 	}
 	
 }

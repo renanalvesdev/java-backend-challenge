@@ -67,5 +67,12 @@ public class User {
 	)
 	private List<Movie> favoriteMovies;
 
+	public void addMovieToFavorites(Movie movie) {
+		favoriteMovies.add(movie);
+	}
+	
+	public void removeMovieToFavorites(Movie movie) {
+		favoriteMovies.remove(movie);
+	}
 	
 }

@@ -1,8 +1,14 @@
 package pt.com.renan.javabechallenge.integration;
 
-import pt.com.renan.javabechallenge.domain.entity.Movie;
-
 public abstract class ExternalApiMovieData {
 	
-	protected abstract Movie toMovie();
+	protected abstract String title();
+	
+    public MovieDTO toMovieDto() {
+    	return  MovieDTO
+    			.builder()
+    			.title(title())
+    			.build();
+    }
+    
 }

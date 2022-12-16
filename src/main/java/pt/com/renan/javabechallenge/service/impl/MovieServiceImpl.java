@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,6 @@ import pt.com.renan.javabechallenge.domain.entity.User;
 import pt.com.renan.javabechallenge.domain.repository.MovieRepository;
 import pt.com.renan.javabechallenge.domain.repository.UserRepository;
 import pt.com.renan.javabechallenge.integration.ExternalApiMovieService;
-import pt.com.renan.javabechallenge.integration.imdb.IMDBApiService;
 import pt.com.renan.javabechallenge.integration.themoviedb.TheMovieDbApiService;
 import pt.com.renan.javabechallenge.security.authentication.AuthenticationFacade;
 
@@ -25,6 +25,7 @@ import pt.com.renan.javabechallenge.security.authentication.AuthenticationFacade
 public class MovieServiceImpl {
 
 	@Autowired
+	@Qualifier("theMovieDbApiService")
 	private ExternalApiMovieService exApiMovieService;
 	
 	@Autowired
@@ -37,8 +38,6 @@ public class MovieServiceImpl {
 	private AuthenticationFacade authenticationFacade;
 	
 	public void populate() {
-		
-		exApiMovieService = new TheMovieDbApiService();
 		
 		exApiMovieService.allMovies()
 			.stream()

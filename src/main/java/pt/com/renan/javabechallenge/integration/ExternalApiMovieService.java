@@ -12,6 +12,8 @@ import pt.com.renan.javabechallenge.domain.entity.Movie;
 @Service
 public abstract class ExternalApiMovieService {
 	
+	private String apiKey;
+	
 	public List<Movie> allMovies() {
 		return retreiveData().getMovieResults();
 	}
@@ -35,9 +37,16 @@ public abstract class ExternalApiMovieService {
 				.build();
 	}
 	
+	protected void setApiKey(String apiKey) { 
+		this.apiKey = apiKey;
+	}
+	
+	protected String getApiKey() {
+		return this.apiKey;
+	}
+	
 	protected abstract <T extends ExternalApiMoviesData> Class<T> clazz();
 	protected abstract String baseUrl();
-	protected abstract String apiKey();
 	protected abstract String apiUrl();
 	protected abstract String uri();
 	

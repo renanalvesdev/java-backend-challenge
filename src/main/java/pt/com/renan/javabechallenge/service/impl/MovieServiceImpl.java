@@ -14,6 +14,9 @@ import pt.com.renan.javabechallenge.domain.entity.Movie;
 import pt.com.renan.javabechallenge.domain.entity.User;
 import pt.com.renan.javabechallenge.domain.repository.MovieRepository;
 import pt.com.renan.javabechallenge.domain.repository.UserRepository;
+import pt.com.renan.javabechallenge.integration.ExternalApiMovieService;
+import pt.com.renan.javabechallenge.integration.imdb.IMDBApiService;
+import pt.com.renan.javabechallenge.integration.themoviedb.TheMovieDbApiService;
 import pt.com.renan.javabechallenge.security.authentication.AuthenticationFacade;
 
 @Service
@@ -22,7 +25,7 @@ import pt.com.renan.javabechallenge.security.authentication.AuthenticationFacade
 public class MovieServiceImpl {
 
 	@Autowired
-	private IMDBApiService imdbApiService;
+	private ExternalApiMovieService exApiMovieService;
 	
 	@Autowired
 	private MovieRepository repository;
@@ -35,10 +38,12 @@ public class MovieServiceImpl {
 	
 	public void populate() {
 		
-		imdbApiService.IMDBAllMovies()
+		exApiMovieService = new TheMovieDbApiService();
+		
+		exApiMovieService.allMovies()
 			.stream()
 			.filter(movie -> !repository.existsById(movie.getId()))
-			.forEach(movie -> repository.save(movie.toMovie()));
+			.forEach(movie -> repository.save(movie));
 		
 	}
 	

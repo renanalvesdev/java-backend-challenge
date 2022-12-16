@@ -1,21 +1,16 @@
-package pt.com.renan.javabechallenge.integration;
+package pt.com.renan.javabechallenge.integration.imdb;
 
-import lombok.Data;
 import pt.com.renan.javabechallenge.domain.entity.Movie;
+import pt.com.renan.javabechallenge.integration.ExternalApiMovieData;
 
-@Data
-public class IMDBMovieData {
+public class IMDBMovieData extends ExternalApiMovieData{
 
 	private String Id ;
-    private String Rank ;
     private String Title ;
-    private String FullTitle ; 
     private String Year ;
-    private String Image ;
     private String Crew ;
-    private String IMDbRating; 
-    private String IMDbRatingCount; 
     
+    @Override
     public Movie toMovie() {
     	
     	return  Movie

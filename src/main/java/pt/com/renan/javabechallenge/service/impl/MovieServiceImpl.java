@@ -16,6 +16,10 @@ import pt.com.renan.javabechallenge.domain.entity.Movie;
 import pt.com.renan.javabechallenge.domain.entity.User;
 import pt.com.renan.javabechallenge.domain.repository.MovieRepository;
 import pt.com.renan.javabechallenge.domain.repository.UserRepository;
+import pt.com.renan.javabechallenge.exception.movie.InvalidMovieException;
+import pt.com.renan.javabechallenge.exception.movie.MovieAlreadyFavoritedException;
+import pt.com.renan.javabechallenge.exception.movie.MovieNotFavoritedException;
+import pt.com.renan.javabechallenge.exception.user.InvalidUserException;
 import pt.com.renan.javabechallenge.integration.ExternalApiMovieService;
 import pt.com.renan.javabechallenge.integration.MovieDTO;
 import pt.com.renan.javabechallenge.security.authentication.AuthenticationFacade;
@@ -79,7 +83,7 @@ public class MovieServiceImpl {
 	public void add(User user, Movie movie) {
 		
 		if(user.getFavoriteMovies().stream().anyMatch(m -> m.equals(movie))) {
-			throw new RuntimeException("Movie already favorited");
+			throw new MovieAlreadyFavoritedException();
 		}
 		
 		movie.addToFavorites(user);
@@ -94,7 +98,7 @@ public class MovieServiceImpl {
 	
 	private void remove(User user, Movie movie) {
 		if(user.getFavoriteMovies().stream().noneMatch(m -> m.equals(movie))) {
-			throw new RuntimeException("Selected movie is not favorited.");
+			throw new MovieNotFavoritedException();
 		}
 		
 		movie.removeFromFavorites(user);
@@ -113,13 +117,13 @@ public class MovieServiceImpl {
 	public Movie findMovie(Integer id) {
 		return repository
 				.findById(id)
-				.orElseThrow(() -> new RuntimeException("Invalid Movie"));
+				.orElseThrow(() -> new InvalidMovieException());
 	}
 	
 	private User findUser() {
 		return userRepository
 				.findByLogin(authenticationFacade.getLoggerUser())
-				.orElseThrow(() -> new RuntimeException("Invalid User"));
+				.orElseThrow(() -> new InvalidUserException());
 	}
 	
 

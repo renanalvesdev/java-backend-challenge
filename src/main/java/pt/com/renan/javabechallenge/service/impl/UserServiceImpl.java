@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import pt.com.renan.javabechallenge.domain.entity.User;
 import pt.com.renan.javabechallenge.domain.entity.enums.Roles;
 import pt.com.renan.javabechallenge.domain.repository.UserRepository;
-import pt.com.renan.javabechallenge.exception.InvalidPasswordException;
-import pt.com.renan.javabechallenge.exception.RoleNotFoundException;
+import pt.com.renan.javabechallenge.exception.user.InvalidPasswordException;
+import pt.com.renan.javabechallenge.exception.user.RoleNotFoundException;
 
 
 @Service

@@ -21,7 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import lombok.RequiredArgsConstructor;
 import pt.com.renan.javabechallenge.domain.entity.User;
 import pt.com.renan.javabechallenge.domain.entity.enums.Roles;
-import pt.com.renan.javabechallenge.exception.InvalidPasswordException;
+import pt.com.renan.javabechallenge.exception.user.InvalidPasswordException;
 import pt.com.renan.javabechallenge.rest.dto.CredentialsDTO;
 import pt.com.renan.javabechallenge.rest.dto.TokenDTO;
 import pt.com.renan.javabechallenge.rest.dto.UpdatePermissionsDTO;

@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
@@ -48,8 +49,7 @@ public class MovieServiceImpl {
 	@Autowired
 	private AuthenticationFacade authenticationFacade;
 	
-	@Autowired
-	private HazelcastInstance hazelcastInstance;
+	private final HazelcastInstance hazelcastInstance  = Hazelcast.newHazelcastInstance();
 	
 	@Transactional
 	public void populate() {
@@ -121,7 +121,8 @@ public class MovieServiceImpl {
 		return topMovies;
 	}
 	
-	public List<Movie> topMoviesCached(RequestNotPermitted requestNotPermited){
+	public List<Movie> topMoviesCached(RequestNotPermitted requestNotPermited) {
+		System.out.println("getting top movies from cache");
 		return retrieveMap().get(TOP_MOVIES_KEY);
 	}
 	

@@ -1,5 +1,7 @@
 package pt.com.renan.javabechallenge.domain.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,8 +20,13 @@ import pt.com.renan.javabechallenge.integration.MovieDTO;
 @Builder
 @Entity
 @Table(name = "movie")
-public class Movie {
+public class Movie implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue (strategy = GenerationType.AUTO)
 	private Integer Id;

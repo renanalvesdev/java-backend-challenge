@@ -19,11 +19,5 @@ public class ApplicationControllerAdvice {
 		return new ApiErrors(errorMessage);
 	}
 	
-	@ExceptionHandler({ RequestNotPermitted.class })
-	@ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
-	public void handleRequestNotPermitted() {
-	
-	}
-	
 	
 }

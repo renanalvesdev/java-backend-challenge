@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import pt.com.renan.javabechallenge.exception.BusinessException;
 import pt.com.renan.javabechallenge.rest.ApiErrors;
 
@@ -18,6 +19,11 @@ public class ApplicationControllerAdvice {
 		return new ApiErrors(errorMessage);
 	}
 	
+	@ExceptionHandler({ RequestNotPermitted.class })
+	@ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+	public void handleRequestNotPermitted() {
+	
+	}
 	
 	
 }

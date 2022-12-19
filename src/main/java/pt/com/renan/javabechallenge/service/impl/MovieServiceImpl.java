@@ -1,16 +1,20 @@
 package pt.com.renan.javabechallenge.service.impl;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hazelcast.core.HazelcastInstance;
+
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import pt.com.renan.javabechallenge.domain.entity.Movie;
 import pt.com.renan.javabechallenge.domain.entity.User;
@@ -29,6 +33,8 @@ import pt.com.renan.javabechallenge.security.authentication.AuthenticationFacade
 @RequiredArgsConstructor
 public class MovieServiceImpl {
 
+	private static final String TOP_MOVIES_KEY= "topMovies";
+	
 	@Autowired
 	@Qualifier("iMDBApiService")
 	private ExternalApiMovieService exApiMovieService;
@@ -42,6 +48,10 @@ public class MovieServiceImpl {
 	@Autowired
 	private AuthenticationFacade authenticationFacade;
 	
+	@Autowired
+	private HazelcastInstance hazelcastInstance;
+	
+	@Transactional
 	public void populate() {
 		
 		List<MovieDTO> newMovies = exApiMovieService.allMovies();
@@ -104,9 +114,15 @@ public class MovieServiceImpl {
 		movie.removeFromFavorites(user);
 	}
 	
-	@Cacheable
+	@RateLimiter(name = "rateLimiterApi", fallbackMethod = "topMoviesCached")
 	public List<Movie> topMovies() {
-		return repository.findTop10ByOrderByStarsDesc();
+		List<Movie> topMovies = repository.findTop10ByOrderByStarsDesc();
+		retrieveMap().put(TOP_MOVIES_KEY, topMovies);
+		return topMovies;
+	}
+	
+	public List<Movie> topMoviesCached(RequestNotPermitted requestNotPermited){
+		return retrieveMap().get(TOP_MOVIES_KEY);
 	}
 	
 	public List<Movie> favoriteMovies() {
@@ -126,5 +142,10 @@ public class MovieServiceImpl {
 				.orElseThrow(() -> new InvalidUserException());
 	}
 	
+	//CACHE
+
+	private ConcurrentMap<String,List<Movie>> retrieveMap() {
+        return hazelcastInstance.getMap("map");
+    }
 
 }

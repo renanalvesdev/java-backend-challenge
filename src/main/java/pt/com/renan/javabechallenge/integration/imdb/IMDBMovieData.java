@@ -14,7 +14,7 @@ public class IMDBMovieData extends ExternalApiMovieData{
     private String Crew ;
 	
     @Override
-	protected String title() {
+	protected String getExtTitle() {
 		return this.getTitle();
 	}
     

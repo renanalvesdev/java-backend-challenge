@@ -7,14 +7,12 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import pt.com.renan.javabechallenge.domain.entity.Movie;
-
 @Service
 public abstract class ExternalApiMovieService {
 	
 	private String apiKey;
 	
-	public List<MovieDTO> allMovies() {
+	public List<String> allMovies() {
 		return retreiveData().getMovieResults();
 	}
 

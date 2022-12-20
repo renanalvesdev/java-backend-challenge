@@ -10,7 +10,7 @@ public abstract class ExternalApiMoviesData {
 	
 	protected abstract List<? extends ExternalApiMovieData> getExternalResults();
 	
-	public List<MovieDTO> getMovieResults() {
-		return getExternalResults().stream().map(imdbMovie -> imdbMovie.toMovieDto()).collect(Collectors.toList());
+	public List<String> getMovieResults() {
+		return getExternalResults().stream().map(movie -> movie.getExtTitle()).collect(Collectors.toList());
 	}
 }

@@ -38,6 +38,10 @@ public class Movie implements Serializable{
 	@EqualsAndHashCode.Exclude
 	private Integer stars;
 	
+	public Movie(String title) {
+		this.title = title;
+	}
+	
 	public Movie() {
 		this.stars = 0;
 	}
@@ -60,11 +64,8 @@ public class Movie implements Serializable{
 		user.removeMovieToFavorites(this);
 	}
 	
-	public MovieDTO toMovieDto() {
-		return  MovieDTO
-    			.builder()
-    			.title(title)
-    			.build();
+	public String toMovieDto() {
+		return  this.title;
 	}
 	
 }

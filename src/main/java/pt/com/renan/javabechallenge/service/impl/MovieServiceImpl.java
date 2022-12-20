@@ -26,7 +26,6 @@ import pt.com.renan.javabechallenge.exception.movie.MovieAlreadyFavoritedExcepti
 import pt.com.renan.javabechallenge.exception.movie.MovieNotFavoritedException;
 import pt.com.renan.javabechallenge.exception.user.InvalidUserException;
 import pt.com.renan.javabechallenge.integration.ExternalApiMovieService;
-import pt.com.renan.javabechallenge.integration.MovieDTO;
 import pt.com.renan.javabechallenge.security.authentication.AuthenticationFacade;
 
 @Service
@@ -54,19 +53,24 @@ public class MovieServiceImpl {
 	@Transactional
 	public void populate() {
 		
-		List<MovieDTO> newMovies = exApiMovieService.allMovies();
+		List<String> newMovies = exApiMovieService.allMovies();
+		
+		newMovies.removeAll(existingMoviesTitlesByTitles(newMovies));
 
-		List<MovieDTO> savedMovies = repository
-				.findAll()
+		repository.saveAll(
+				newMovies
 				.stream()
-				.map(movie -> movie.toMovieDto())
+				.map(nm -> new Movie(nm))
+				.collect(Collectors.toList()));
+		
+	}
+
+	private List<String> existingMoviesTitlesByTitles(List<String> titles){
+		return repository
+				.findByTitles(titles)
+				.stream()
+				.map(m -> m.getTitle())
 				.collect(Collectors.toList());
-		
-		newMovies.removeAll(savedMovies);
-		
-		newMovies.stream().forEach(movie -> repository.save(movie.toMovie()));
-		
-		
 	}
 	
 	public List<Movie> getAll(){

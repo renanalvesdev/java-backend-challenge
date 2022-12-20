@@ -11,7 +11,7 @@ public class TheMovieDbMovieData extends ExternalApiMovieData{
 	private String original_title;
 
 	@Override
-	protected String title() {
+	protected String getExtTitle() {
 		return this.getOriginal_title();
 	}
 	

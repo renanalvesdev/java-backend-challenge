@@ -9,8 +9,13 @@ import lombok.Data;
 public abstract class ExternalApiMoviesData {
 	
 	protected abstract List<? extends ExternalApiMovieData> getExternalResults();
+	protected abstract Boolean getAvailable();
 	
 	public List<String> getMovieResults() {
+		
+		if(!getAvailable())
+			throw new RuntimeException("API unavailable");
+		
 		return getExternalResults().stream().map(movie -> movie.getExtTitle()).collect(Collectors.toList());
 	}
 }

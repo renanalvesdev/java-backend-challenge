@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.github.resilience4j.ratelimiter.RequestNotPermitted;
-import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import pt.com.renan.javabechallenge.domain.entity.Movie;
 import pt.com.renan.javabechallenge.service.impl.MovieServiceImpl;
@@ -33,6 +32,10 @@ public class MovieController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public void populate() {
 		service.populate();
+	}
+	
+	private void populateFallback(Throwable t) { 
+		System.out.println("oi" + t.getMessage());
 	}
 	
 	@GetMapping("/all")

@@ -13,5 +13,5 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>{
 	List<Movie> findTop10ByOrderByStarsDesc();
 	
 	@Query(value = "SELECT m FROM Movie m where m.title IN (:titles)")  
-	 List<Movie> findByTitles(@Param("names") List<String> titles);
+	 List<Movie> findByTitles(@Param("titles") List<String> titles);
 }

@@ -12,10 +12,16 @@ import pt.com.renan.javabechallenge.integration.ExternalApiMoviesData;
 public class TheMovieDbMoviesData extends ExternalApiMoviesData{
 
 	private List<TheMovieDbMovieData> results ;
+	private Boolean success;
 
 	@Override
 	protected List<? extends ExternalApiMovieData> getExternalResults() {
 		return results;
+	}
+
+	@Override
+	protected Boolean getAvailable() {
+		return this.success == null || this.success;
 	}
 	
 }

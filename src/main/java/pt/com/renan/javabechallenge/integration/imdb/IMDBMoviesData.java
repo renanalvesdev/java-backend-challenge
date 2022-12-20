@@ -12,10 +12,16 @@ import pt.com.renan.javabechallenge.integration.ExternalApiMoviesData;
 public class IMDBMoviesData extends ExternalApiMoviesData{
 
 	private List<IMDBMovieData> Items;
+	private String errorMessage;
 
 	@Override
 	protected List<? extends ExternalApiMovieData> getExternalResults() {
 		return Items;
+	}
+
+	@Override
+	protected Boolean getAvailable() {
+		return this.errorMessage == null || this.errorMessage.isEmpty();
 	}
 	
 }

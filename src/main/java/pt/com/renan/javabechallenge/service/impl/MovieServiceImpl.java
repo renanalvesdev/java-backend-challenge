@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +27,10 @@ import pt.com.renan.javabechallenge.exception.movie.MovieAlreadyFavoritedExcepti
 import pt.com.renan.javabechallenge.exception.movie.MovieNotFavoritedException;
 import pt.com.renan.javabechallenge.exception.user.InvalidUserException;
 import pt.com.renan.javabechallenge.integration.ExternalApiMovieService;
+import pt.com.renan.javabechallenge.integration.PopulateExternalMovies;
 import pt.com.renan.javabechallenge.security.authentication.AuthenticationFacade;
 
 @Service
-@CacheConfig(cacheNames = "movies")
 @RequiredArgsConstructor
 public class MovieServiceImpl {
 
@@ -37,7 +38,14 @@ public class MovieServiceImpl {
 	
 	@Autowired
 	@Qualifier("iMDBApiService")
-	private ExternalApiMovieService exApiMovieService;
+	private ExternalApiMovieService imdbService;
+	
+	@Autowired
+	@Qualifier("theMovieDbApiService")
+	private ExternalApiMovieService theMovieDbService;
+	
+	@Autowired
+	private PopulateExternalMovies populateExternalMovies;
 	
 	@Autowired
 	private MovieRepository repository;
@@ -50,27 +58,17 @@ public class MovieServiceImpl {
 	
 	private final HazelcastInstance hazelcastInstance  = Hazelcast.newHazelcastInstance();
 	
-	@Transactional
+	@CircuitBreaker(name = "circuitBreakerPopulateMovies", fallbackMethod = "populateFallback")
 	public void populate() {
-		
-		List<String> newMovies = exApiMovieService.allMovies();
-		
-		newMovies.removeAll(existingMoviesTitlesByTitles(newMovies));
-
-		repository.saveAll(
-				newMovies
-				.stream()
-				.map(nm -> new Movie(nm))
-				.collect(Collectors.toList()));
-		
+		populateExternalMovies(imdbService);
 	}
-
-	private List<String> existingMoviesTitlesByTitles(List<String> titles){
-		return repository
-				.findByTitles(titles)
-				.stream()
-				.map(m -> m.getTitle())
-				.collect(Collectors.toList());
+	
+	public void populateFallback(Throwable t) {
+		populateExternalMovies(theMovieDbService);
+	}
+	
+	private void populateExternalMovies(ExternalApiMovieService externalApiMovieService) {
+		populateExternalMovies.populate(externalApiMovieService); 
 	}
 	
 	public List<Movie> getAll(){

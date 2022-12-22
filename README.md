@@ -64,7 +64,7 @@ This is a simple project with a challenge for Backend developers.
 - [x] Each time the user includes the movie in the favorite list add one "star" to the movie
 - [x] Create an endpoint to list the top 10 movies, the movies with more stars.
 - [x] Create an endpoint to list the favorite movies per user.
-- [ ] Don't forget to include Swagger/OpenAPI, and the test.
+- [x] Don't forget to include Swagger/OpenAPI, and the test.
 
 #### Content to help:
 
@@ -83,7 +83,7 @@ This is a simple project with a challenge for Backend developers.
 
 - [x] Include this rank top movies in the cache (Hazelcast), and get from it using RateLimiter (https://resilience4j.readme.io/docs/ratelimiter) as fallback.
 - [x] Find another API to get Movies, and update the first endpoint to use the template method design pattern to be able to get the movies from both APIs. Use a CircuitBreak for that. If you have any problem with one API you should get it from the other API as a fallback. (You can try changing the API Key)
-- [ ] Create a new endpoint to send a random movie to the user.
+- [x] Create a new endpoint to send a random movie to the user.
 This endpoint should do this: find another user who likes the same movies as the current user and upload a random movie from that favorites list.
 If this condition does not exist, just send a random movie.
 

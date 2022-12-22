@@ -3,11 +3,11 @@ package pt.com.renan.javabechallenge.service.impl;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
+
+import javax.persistence.NoResultException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +58,7 @@ public class MovieServiceImpl {
 	
 	private final HazelcastInstance hazelcastInstance  = Hazelcast.newHazelcastInstance();
 	
+	//CIRCUIT BREAK
 	@CircuitBreaker(name = "circuitBreakerPopulateMovies", fallbackMethod = "populateFallback")
 	public void populate() {
 		populateExternalMovies(imdbService);
@@ -97,7 +98,6 @@ public class MovieServiceImpl {
 		if(user.getFavoriteMovies().stream().anyMatch(m -> m.equals(movie))) {
 			throw new MovieAlreadyFavoritedException();
 		}
-		
 		movie.addToFavorites(user);
 	}
 	
@@ -116,6 +116,22 @@ public class MovieServiceImpl {
 		movie.removeFromFavorites(user);
 	}
 	
+	public void favoriteSuggestedMovie() {
+		
+		Integer userId = findUser().getId();
+		
+		Movie suggestedMovie = repository
+				.findSuggestedMovieForUser(userId)
+				.orElse(
+					repository.
+					findRandomMovieForUser(userId)
+					.orElseThrow(() -> new NoResultException())
+				);
+		
+		addToFavorites(suggestedMovie.getId());
+	}
+	
+	//RATE LIMITER
 	@RateLimiter(name = "rateLimiterApi", fallbackMethod = "topMoviesCached")
 	public List<Movie> topMovies() {
 		List<Movie> topMovies = repository.findTop10ByOrderByStarsDesc();

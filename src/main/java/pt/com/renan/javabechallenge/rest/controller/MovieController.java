@@ -34,10 +34,6 @@ public class MovieController {
 		service.populate();
 	}
 	
-	private void populateFallback(Throwable t) { 
-		System.out.println("oi" + t.getMessage());
-	}
-	
 	@GetMapping("/all")
 	public List<Movie> getAll(){
 		return service.getAll();
@@ -51,6 +47,11 @@ public class MovieController {
 	@PostMapping("/removeFromFavorites/{id}")
 	public void removeFromFavorites(@PathVariable Integer id){
 		service.removeFromFavorites(id);
+	}
+	
+	@PostMapping("/favoriteSuggesttedMovie")
+	public void favoriteSugestedMovie(){
+		service.favoriteSuggestedMovie();
 	}
 	
 	
